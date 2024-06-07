@@ -1,9 +1,7 @@
-import { useState } from "react";
 import "./App.css";
+import "@fontsource-variable/inter"; // Defaults to weight 400
 
 function App() {
-  const [count, setCount] = useState(0);
-
   return <></>;
 }
 
