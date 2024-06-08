@@ -75,14 +75,14 @@ add_gpu_info(
 add_gpu_info(
     "2080ti", "???", "https://images.nvidia.com/aem-dam/en-zz/Solutions/design-visualization/technologies/turing-architecture/NVIDIA-Turing-Architecture-Whitepaper.pdf#page=14",
     tdp=260, sms=68, cores_cuda=4352, cores_tensor=544, register_size=17408*1024,
-    cache_l2=5632*KiB, vram=11264*MiB, membw=320*GiB, fp32_general=14.2e12, fp16=113.8, 
+    cache_l2=5632*KiB, vram=11264*MiB, membw=320*GiB, fp32_general=14.2e12, fp16=113.8e12, 
     cache_l1=None,
     **TURING, crippled_fp32acc=True,
 )
 add_gpu_info(
     "Q6000", "???", "https://images.nvidia.com/aem-dam/en-zz/Solutions/design-visualization/technologies/turing-architecture/NVIDIA-Turing-Architecture-Whitepaper.pdf#page=14",
     tdp=260, sms=72, cores_cuda=4608, cores_tensor=576, register_size=18432*KiB,
-    cache_l2=6144*KiB, vram=24*GiB, membw=672*GiB, fp32_general=16.3e12, fp16=130.5, 
+    cache_l2=6144*KiB, vram=24*GiB, membw=672*GiB, fp32_general=16.3e12, fp16=130.5e12, 
     cache_l1=None,
     **TURING,
 )
@@ -170,12 +170,16 @@ add_gpu_info(
     sms=108, cores_cuda=6912, cores_tensor=432,
     fp32_general=19.5e12, fp16=312e12,
     vram=80*GiB, membw=1555*GiB,
-    cache_l1=10752*KiB, cache_l2=40*MiB,register_size=27648*KiB,
+    cache_l1=10752*KiB, cache_l2=40*MiB, register_size=27648*KiB,
     tdp=400,
     # shm 164KiB * sms?
     **AMPERE,
 )
 
+# TODO: figure out where Shared Memory + L1 Cache should go
+# "The merger of shared memory and L1 resources enables an increase in shared memory capacity to 96 KB per Volta SM, compared to 64 KB in GP100."
+# "The combined capacity of the L1 data cache and shared memory is 192 KB/SM in A100 versus 128 KB/SM in V100."
+# H100: "256 KB of combined shared memory and L1 data cache, 1.33x larger than A100"
 
 AD10x_register = lambda sms: sms * 64 * KiB * 4
 add_gpu_info(
@@ -213,13 +217,23 @@ add_gpu_info(
     tdp=320, **ADA,
 )
 add_gpu_info(
-    "H100", "???", "https://resources.nvidia.com/en-us-tensor-core",
+    "H100-PCIe", "???", "https://resources.nvidia.com/en-us-tensor-core",
+    sms=114, cores_cuda=14592, cores_tensor=456,
+    fp32_general=66.9e12, fp16=756.5e12,
+    vram=80*GiB, membw=2048*GiB,
+    cache_l1=None, cache_l2=50*MiB, register_size=33792,
+    tdp=350, **ADA,
+)
+add_gpu_info(
+    "H100-SXM", "???", "https://resources.nvidia.com/en-us-tensor-core/nvidia-tensor-core-gpu-datasheet",
     sms=132, cores_cuda=16896, cores_tensor=528,
     fp32_general=66.9e12, fp16=989.4e12,
     vram=80*GiB, membw=3352*GiB,
     cache_l1=None, cache_l2=50*MiB, register_size=33792,
     tdp=700, **ADA,
 )
+
+
 
 import json
 with open("some-gpus.json", 'w') as f:
