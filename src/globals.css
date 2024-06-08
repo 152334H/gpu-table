@@ -66,15 +66,16 @@
   }
 }
 
-.glassy-bg {
-  background-color: rgba(0, 0, 0, 0.2);
-  border-radius: 16px;
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(10.6px);
-  -webkit-backdrop-filter: blur(10.6px);
-  border: 1px solid rgba(76, 76, 76, 0.3);
+@layer utilities {
+  .glassy-bg {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10.6px);
+    -webkit-backdrop-filter: blur(10.6px);
+    border: 1px solid rgba(76, 76, 76, 0.3);
+  }
 }
-
 .radial-bg {
   position: relative;
   overflow: hidden;

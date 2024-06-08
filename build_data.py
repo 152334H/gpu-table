@@ -12,6 +12,8 @@ for entry in data:
     cleaned_data.append(
         {
             "name": entry["s"],
+            "vram": entry["vram"],
+            "membw": entry["membw"],
             "citation": entry["citation"],
             "tdp": entry["tdp"],
             "sms": entry["sms"],

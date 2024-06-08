@@ -1,7 +1,7 @@
 import "./App.css";
 import "./globals.css";
 import "@fontsource-variable/inter"; // Defaults to weight 400
-import { MainTable } from "@/components/features/mainTable.tsx";
+import { MainTable } from "@/components/features/mainTable/mainTable.tsx";
 
 function App() {
   return (

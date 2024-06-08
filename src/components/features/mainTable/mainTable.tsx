@@ -39,6 +39,9 @@ import {
 } from "@/components/ui/tooltip";
 import debounce from "lodash.debounce";
 import { Checkbox } from "@/components/ui/checkbox";
+import { FaEyeSlash } from "react-icons/fa6";
+import { accessorToFullNameMapping, stringifyVisibilityObj } from "./utils";
+import { FaXmark } from "react-icons/fa6";
 
 const NAText: React.FC = () => {
   return <span className="text-slate-500">N/A</span>;
@@ -59,6 +62,25 @@ const KBDisplay: React.FC<DisplayProps> = ({ value, className }) => {
       <TooltipContent>
         <span className={`whitespace-nowrap ${className}`}>
           {(value / 1000).toFixed(3)} <span className="text-primary">KB</span>
+        </span>
+      </TooltipContent>
+    </Tooltip>
+  );
+};
+
+const GBDisplay: React.FC<DisplayProps> = ({ value, className }) => {
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <span className={`whitespace-nowrap ${className}`}>
+          {(value / 1000000000).toFixed(1)}{" "}
+          <span className="text-primary">GB</span>
+        </span>
+      </TooltipTrigger>
+      <TooltipContent>
+        <span className={`whitespace-nowrap ${className}`}>
+          {(value / 1000000000).toFixed(3)}{" "}
+          <span className="text-primary">GB</span>
         </span>
       </TooltipContent>
     </Tooltip>
@@ -92,7 +114,7 @@ export const MainTable: React.FC = () => {
       {
         accessorKey: "name",
         cell: (info) => info.getValue(),
-        header: () => <span>GPU Name</span>,
+        header: () => <span>Name</span>,
       },
       {
         accessorKey: "tdp",
@@ -107,6 +129,16 @@ export const MainTable: React.FC = () => {
         accessorKey: "sms",
         cell: (info) => info.getValue(),
         header: () => <span>SMs</span>,
+      },
+      {
+        accessorKey: "vram",
+        cell: (info) => <GBDisplay value={info.getValue() as number} />,
+        header: () => <span>VRAM</span>,
+      },
+      {
+        accessorKey: "membw",
+        cell: (info) => <GBDisplay value={info.getValue() as number} />,
+        header: () => <span>Memory Bandwidth</span>,
       },
       {
         accessorKey: "cores_cuda",
@@ -257,6 +289,29 @@ export const MainTable: React.FC = () => {
     pageSize: 10,
   });
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]); // can set initial column filter state here
+  const [columnVisibility, setColumnVisibility] = useState({
+    name: true,
+    citation: true,
+    tdp: true,
+    membw: true,
+    vram: true,
+    sms: false,
+    cores_cuda: false,
+    cores_tensor: false,
+    register_size: false,
+    cache_l1: false,
+    cache_l2: false,
+    fp32_general: true,
+    fp16: true,
+    bf16: false,
+    tf32: false,
+    int8: false,
+    int4: false,
+    fp8: false,
+    fp6: false,
+    fp4: false,
+    crippled_fp32acc: true,
+  });
 
   const table = useReactTable({
     data: GPUDataJSON as GPUData[],
@@ -265,10 +320,12 @@ export const MainTable: React.FC = () => {
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    onColumnVisibilityChange: setColumnVisibility,
     onPaginationChange: setPagination,
     state: {
       pagination,
       columnFilters,
+      columnVisibility,
     },
     autoResetPageIndex: true,
     onColumnFiltersChange: setColumnFilters,
@@ -296,31 +353,83 @@ export const MainTable: React.FC = () => {
           <span>Factor in Crippled FP32 Performance</span>
         </div>
       </div>
+      <div className="mb-2 md:mb-4 flex flex-col md:flex-row">
+        <span className="flex items-center mr-2">
+          <span className="whitespace-nowrap text-primary">Hidden Columns</span>{" "}
+          <FaEyeSlash className="ml-1 text-slate-300" />:
+        </span>
+        <div>
+          {Object.keys(columnVisibility).map((colName) => {
+            if (!columnVisibility[colName]) {
+              return (
+                <Badge
+                  key={colName}
+                  onClick={() => {
+                    columnVisibility[colName] = true;
+                    setColumnVisibility(
+                      JSON.parse(stringifyVisibilityObj(columnVisibility)),
+                    );
+                  }}
+                  className="ml-1 cursor-pointer animate-in fade-in"
+                >
+                  <span className="flex items-center">
+                    {accessorToFullNameMapping[colName]}{" "}
+                    <FaXmark className="ml-1 text-red-600" />
+                  </span>
+                </Badge>
+              );
+            }
+            return null;
+          })}
+        </div>
+      </div>
       <Table>
-        <TableHeader>
+        <TableHeader className="bg-neutral-800 bg-opacity-50">
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => {
                 return (
-                  <TableHead key={header.id} colSpan={header.colSpan}>
-                    <div
-                      {...{
-                        className: header.column.getCanSort()
-                          ? "cursor-pointer select-none flex items-center"
-                          : "",
-                        onClick: header.column.getToggleSortingHandler(),
-                      }}
-                    >
-                      <span className="font-bold bg-gradient-to-br from-[#ffd194] to-[#70e1f5] text-transparent bg-clip-text">
-                        {flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
-                        )}
-                      </span>
-                      {{
-                        asc: " 🔼",
-                        desc: " 🔽",
-                      }[header.column.getIsSorted() as string] ?? null}
+                  <TableHead
+                    className="p-1"
+                    key={header.id}
+                    colSpan={header.colSpan}
+                  >
+                    <div className="flex items-center">
+                      <div
+                        {...{
+                          className: header.column.getCanSort()
+                            ? "cursor-pointer select-none flex items-center justify-center text-center p-2 transition-opacity hover:opacity-50"
+                            : "",
+                          onClick: header.column.getToggleSortingHandler(),
+                        }}
+                      >
+                        <span className="font-bold bg-gradient-to-br from-[#ffd194] to-[#70e1f5] text-transparent bg-clip-text">
+                          {flexRender(
+                            header.column.columnDef.header,
+                            header.getContext(),
+                          )}
+                        </span>
+                        <span className="ml-1 block">
+                          {{
+                            asc: " 🔼",
+                            desc: " 🔽",
+                          }[header.column.getIsSorted() as string] ?? null}
+                        </span>
+                      </div>
+                      <Button
+                        onClick={() => {
+                          columnVisibility[header.id] = false;
+                          setColumnVisibility(
+                            JSON.parse(
+                              stringifyVisibilityObj(columnVisibility),
+                            ),
+                          );
+                        }}
+                        variant="ghost"
+                        size="xs"
+                      >
+                        <FaEyeSlash />
+                      </Button>
                     </div>
                   </TableHead>
                 );

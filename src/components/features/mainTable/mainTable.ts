@@ -2,6 +2,8 @@ export interface GPUData {
   name: string;
   citation: string;
   tdp: number;
+  vram: number;
+  membw: number;
   sms: number;
   cores_cuda: number;
   cores_tensor: number;
