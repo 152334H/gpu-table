@@ -73,3 +73,5 @@ export const accessorToFullNameMapping = {
   crippled_fp32acc: "Crippled FP32 Accum",
   citation: "Citation",
 };
+
+export const GPULocalStorageName = "gpu-site-settings";

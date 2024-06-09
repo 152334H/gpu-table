@@ -1,5 +1,5 @@
-import type { GPUData } from "./mainTable";
-import { useState, useMemo } from "react";
+import type { GPUData, SettingsObj } from "./mainTable";
+import { useState, useMemo, useEffect } from "react";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -40,8 +40,13 @@ import {
 import debounce from "lodash.debounce";
 import { Checkbox } from "@/components/ui/checkbox";
 import { FaEyeSlash } from "react-icons/fa6";
-import { accessorToFullNameMapping, stringifyVisibilityObj } from "./utils";
+import {
+  GPULocalStorageName,
+  accessorToFullNameMapping,
+  stringifyVisibilityObj,
+} from "./utils";
 import { FaXmark } from "react-icons/fa6";
+import { CrippledWarningDialog } from "./crippledWarning";
 
 const NAText: React.FC = () => {
   return <span className="text-slate-500">N/A</span>;
@@ -51,12 +56,18 @@ interface DisplayProps {
   value: number;
   className?: string;
 }
+interface CrippledNonCrippledProps {
+  value: number;
+  crippledVal: number;
+}
+
 const KBDisplay: React.FC<DisplayProps> = ({ value, className }) => {
   return (
     <Tooltip>
       <TooltipTrigger asChild>
         <span className={`whitespace-nowrap ${className}`}>
-          {Math.round(value / 1000)} <span className="text-primary">KB</span>
+          {Math.round(value / 1000)}{" "}
+          <span className="text-primary text-sm">KB</span>
         </span>
       </TooltipTrigger>
       <TooltipContent>
@@ -74,7 +85,7 @@ const GBDisplay: React.FC<DisplayProps> = ({ value, className }) => {
       <TooltipTrigger asChild>
         <span className={`whitespace-nowrap ${className}`}>
           {(value / 1000000000).toFixed(1)}{" "}
-          <span className="text-primary">GB</span>
+          <span className="text-primary text-sm">GB</span>
         </span>
       </TooltipTrigger>
       <TooltipContent>
@@ -93,7 +104,7 @@ const TFlopsDisplay: React.FC<DisplayProps> = ({ value, className }) => {
       <TooltipTrigger asChild>
         <span className={`whitespace-nowrap ${className}`}>
           {(value / 1000000000000).toFixed(2)}{" "}
-          <span className="text-primary">TFLOPS</span>
+          <span className="text-primary text-sm">TFLOPS</span>
         </span>
       </TooltipTrigger>
       <TooltipContent>
@@ -108,182 +119,7 @@ const TFlopsDisplay: React.FC<DisplayProps> = ({ value, className }) => {
 
 export const MainTable: React.FC = () => {
   const [factorInCripple, setFactorInCripple] = useState(true);
-
-  const columns = useMemo<ColumnDef<GPUData>[]>(
-    () => [
-      {
-        accessorKey: "name",
-        cell: (info) => info.getValue(),
-        header: () => <span>Name</span>,
-      },
-      {
-        accessorKey: "tdp",
-        cell: (info) => (
-          <span className="whitespace-nowrap">
-            {info.getValue() as string} <span className="text-primary">W</span>
-          </span>
-        ),
-        header: () => <span className="whitespace-nowrap">TDP (W)</span>,
-      },
-      {
-        accessorKey: "sms",
-        cell: (info) => info.getValue(),
-        header: () => <span>SMs</span>,
-      },
-      {
-        accessorKey: "vram",
-        cell: (info) => <GBDisplay value={info.getValue() as number} />,
-        header: () => <span>VRAM</span>,
-      },
-      {
-        accessorKey: "membw",
-        cell: (info) => <GBDisplay value={info.getValue() as number} />,
-        header: () => <span>Memory Bandwidth</span>,
-      },
-      {
-        accessorKey: "cores_cuda",
-        cell: (info) => info.getValue(),
-        header: () => <span>CUDA Cores</span>,
-      },
-      {
-        accessorKey: "cores_tensor",
-        cell: (info) => info.getValue(),
-        header: () => <span>Tensor Cores</span>,
-      },
-      {
-        accessorKey: "register_size",
-        cell: (info) => <KBDisplay value={info.getValue() as number} />,
-        header: () => <span>Register Size</span>,
-      },
-      {
-        accessorKey: "cache_l1",
-        cell: (info) =>
-          info.getValue() !== null ? (
-            <KBDisplay value={info.getValue() as number} />
-          ) : (
-            <NAText />
-          ),
-        header: () => <span>L1 Cache</span>,
-      },
-      {
-        accessorKey: "cache_l2",
-        cell: (info) =>
-          info.getValue() !== null ? (
-            <KBDisplay value={info.getValue() as number} />
-          ) : (
-            <NAText />
-          ),
-        header: () => <span>L2 Cache</span>,
-      },
-      {
-        accessorKey: "fp32_general",
-        cell: (info) => <TFlopsDisplay value={info.getValue() as number} />,
-        header: () => <span>FP32 Performance</span>,
-      },
-      {
-        accessorKey: factorInCripple ? "fp16" : "fp16_ignore_crippled",
-        cell: (info) => <TFlopsDisplay value={info.getValue() as number} />,
-        header: () => <span>FP16 Performance</span>,
-      },
-      {
-        accessorKey: factorInCripple ? "bf16" : "bf16_ignore_crippled",
-        cell: (info) =>
-          info.getValue() !== null ? (
-            <TFlopsDisplay value={info.getValue() as number} />
-          ) : (
-            <NAText />
-          ),
-        header: () => <span>BF16 Performance</span>,
-      },
-      {
-        accessorKey: "tf32",
-        cell: (info) =>
-          info.getValue() !== null ? (
-            <TFlopsDisplay value={info.getValue() as number} />
-          ) : (
-            <NAText />
-          ),
-        header: () => <span>TF32 Performance</span>,
-      },
-      {
-        accessorKey: "int8",
-        cell: (info) =>
-          info.getValue() !== null ? (
-            <TFlopsDisplay value={info.getValue() as number} />
-          ) : (
-            <NAText />
-          ),
-        header: () => <span>INT8 Performance</span>,
-      },
-      {
-        accessorKey: "int4",
-        cell: (info) =>
-          info.getValue() !== null ? (
-            <TFlopsDisplay value={info.getValue() as number} />
-          ) : (
-            <NAText />
-          ),
-        header: () => <span>INT4 Performance</span>,
-      },
-      {
-        accessorKey: factorInCripple ? "fp8" : "fp8_ignore_crippled",
-        cell: (info) =>
-          info.getValue() !== null ? (
-            <TFlopsDisplay value={info.getValue() as number} />
-          ) : (
-            <NAText />
-          ),
-        header: () => <span>FP8 Performance</span>,
-      },
-      {
-        accessorKey: "fp6",
-        cell: (info) =>
-          info.getValue() !== null ? (
-            <TFlopsDisplay value={info.getValue() as number} />
-          ) : (
-            <NAText />
-          ),
-        header: () => <span>FP6 Performance</span>,
-      },
-      {
-        accessorKey: "fp4",
-        cell: (info) =>
-          info.getValue() !== null ? (
-            <TFlopsDisplay value={info.getValue() as number} />
-          ) : (
-            <NAText />
-          ),
-        header: () => <span>FP4 Performance</span>,
-      },
-      {
-        accessorKey: "crippled_fp32acc",
-        cell: (info) =>
-          info.getValue() ? (
-            <Badge variant="destructive">Crippled</Badge>
-          ) : (
-            <Badge variant={"success"}>Good</Badge>
-          ),
-        header: () => <span>Crippled FP32 Accuracy</span>,
-      },
-      {
-        accessorKey: "citation",
-        cell: (info) => (
-          <Button
-            size="sm"
-            onClick={() => {
-              const newTab = window.open(info.getValue() as string, "_blank");
-              if (newTab) newTab.focus();
-            }}
-          >
-            Link
-          </Button>
-        ),
-        header: () => <span>Citation</span>,
-      },
-    ],
-    [factorInCripple],
-  );
-
+  const [displayCrippledDialog, setDisplayCrippleDialog] = useState(false);
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 10,
@@ -312,6 +148,276 @@ export const MainTable: React.FC = () => {
     fp4: false,
     crippled_fp32acc: true,
   });
+  const [sorting, setSorting] = useState([
+    {
+      id: "fp16",
+      desc: true,
+    },
+  ]);
+  const debouncedSet = debounce(setColumnFilters, 250);
+
+  useEffect(() => {
+    // Get user settings
+    const settings = localStorage.getItem(GPULocalStorageName);
+    if (settings) {
+      const settingsObj: SettingsObj = JSON.parse(settings);
+      setFactorInCripple(settingsObj.crippled);
+    }
+  }, []);
+
+  useEffect(() => {
+    // Re-trigger sorting
+    setSorting([...sorting]);
+  }, [factorInCripple]);
+
+  const columns = useMemo<ColumnDef<GPUData>[]>(
+    () => [
+      {
+        accessorKey: "name",
+        cell: (info) => (
+          <span className="font-semibold">{info.getValue() as string}</span>
+        ),
+        header: () => <span>{accessorToFullNameMapping.name}</span>,
+      },
+      {
+        accessorKey: "tdp",
+        cell: (info) => (
+          <span className="whitespace-nowrap">
+            <span>{info.getValue() as string}</span>{" "}
+            <span className="text-primary text-sm">W</span>
+          </span>
+        ),
+        header: () => (
+          <span className="whitespace-nowrap">
+            {accessorToFullNameMapping.tdp}
+          </span>
+        ),
+      },
+      {
+        accessorKey: "sms",
+        cell: (info) => info.getValue(),
+        header: () => <span>{accessorToFullNameMapping.sms}</span>,
+      },
+      {
+        accessorKey: "vram",
+        cell: (info) => <GBDisplay value={info.getValue() as number} />,
+        header: () => <span>{accessorToFullNameMapping.vram}</span>,
+      },
+      {
+        accessorKey: "membw",
+        cell: (info) => <GBDisplay value={info.getValue() as number} />,
+        header: () => <span>{accessorToFullNameMapping.membw}</span>,
+      },
+      {
+        accessorKey: "cores_cuda",
+        cell: (info) => info.getValue(),
+        header: () => <span>{accessorToFullNameMapping.cores_cuda}</span>,
+      },
+      {
+        accessorKey: "cores_tensor",
+        cell: (info) => info.getValue(),
+        header: () => <span>{accessorToFullNameMapping.cores_tensor}</span>,
+      },
+      {
+        accessorKey: "register_size",
+        cell: (info) => <KBDisplay value={info.getValue() as number} />,
+        header: () => <span>{accessorToFullNameMapping.register_size}</span>,
+      },
+      {
+        accessorKey: "cache_l1",
+        cell: (info) =>
+          info.getValue() !== null ? (
+            <KBDisplay value={info.getValue() as number} />
+          ) : (
+            <NAText />
+          ),
+        header: () => <span>{accessorToFullNameMapping.cache_l1}</span>,
+      },
+      {
+        accessorKey: "cache_l2",
+        cell: (info) =>
+          info.getValue() !== null ? (
+            <KBDisplay value={info.getValue() as number} />
+          ) : (
+            <NAText />
+          ),
+        header: () => <span>{accessorToFullNameMapping.cache_l2}</span>,
+      },
+      {
+        accessorKey: "fp32_general",
+        cell: (info) => <TFlopsDisplay value={info.getValue() as number} />,
+        header: () => <span>{accessorToFullNameMapping.fp32_general}</span>,
+      },
+      {
+        id: "fp16",
+        accessorFn: (row) => {
+          return {
+            value: row.fp16,
+            crippledVal: row.fp16_ignore_crippled,
+          };
+        },
+        sortingFn: (rowA, rowB) => {
+          let dataA = rowA.original.fp16;
+          let dataB = rowB.original.fp16;
+          if (!factorInCripple) {
+            dataA = rowA.original.fp16_ignore_crippled;
+            dataB = rowB.original.fp16_ignore_crippled;
+          }
+          return dataA > dataB ? 1 : dataA < dataB ? -1 : 0;
+        },
+        cell: (info) => {
+          const fp16Vals = info.getValue() as CrippledNonCrippledProps;
+          return (
+            <TFlopsDisplay
+              value={factorInCripple ? fp16Vals.value : fp16Vals.crippledVal}
+            />
+          );
+        },
+        header: () => <span>{accessorToFullNameMapping.fp16}</span>,
+      },
+      {
+        accessorKey: "bf16",
+        accessorFn: (row) => {
+          return {
+            value: row.bf16,
+            crippledVal: row.bf16_ignore_crippled,
+          };
+        },
+        sortingFn: (rowA, rowB) => {
+          let dataA = rowA.original.bf16;
+          let dataB = rowB.original.bf16;
+          if (!factorInCripple) {
+            dataA = rowA.original.bf16_ignore_crippled;
+            dataB = rowB.original.bf16_ignore_crippled;
+          }
+
+          if (!dataA) return -1;
+          if (!dataB) return 1;
+          return dataA > dataB ? 1 : dataA < dataB ? -1 : 0;
+        },
+        cell: (info) => {
+          const vals = info.getValue() as CrippledNonCrippledProps;
+          return info.getValue() !== null ? (
+            <TFlopsDisplay
+              value={factorInCripple ? vals.value : vals.crippledVal}
+            />
+          ) : (
+            <NAText />
+          );
+        },
+        header: () => <span>{accessorToFullNameMapping.bf16}</span>,
+      },
+      {
+        accessorKey: "tf32",
+        cell: (info) =>
+          info.getValue() !== null ? (
+            <TFlopsDisplay value={info.getValue() as number} />
+          ) : (
+            <NAText />
+          ),
+        header: () => <span>{accessorToFullNameMapping.tf32}</span>,
+      },
+      {
+        accessorKey: "int8",
+        cell: (info) =>
+          info.getValue() !== null ? (
+            <TFlopsDisplay value={info.getValue() as number} />
+          ) : (
+            <NAText />
+          ),
+        header: () => <span>{accessorToFullNameMapping.int8}</span>,
+      },
+      {
+        accessorKey: "int4",
+        cell: (info) =>
+          info.getValue() !== null ? (
+            <TFlopsDisplay value={info.getValue() as number} />
+          ) : (
+            <NAText />
+          ),
+        header: () => <span>{accessorToFullNameMapping.int4}</span>,
+      },
+      {
+        accessorKey: "fp8",
+        accessorFn: (row) => {
+          return {
+            value: row.fp8,
+            crippledVal: row.fp8_ignore_crippled,
+          };
+        },
+        sortingFn: (rowA, rowB) => {
+          let dataA = rowA.original.fp8;
+          let dataB = rowB.original.fp8;
+          if (!factorInCripple) {
+            dataA = rowA.original.fp8_ignore_crippled;
+            dataB = rowB.original.fp8_ignore_crippled;
+          }
+
+          if (!dataA) return -1;
+          if (!dataB) return 1;
+          return dataA > dataB ? 1 : dataA < dataB ? -1 : 0;
+        },
+        cell: (info) => {
+          const vals = info.getValue() as CrippledNonCrippledProps;
+          info.getValue() !== null ? (
+            <TFlopsDisplay
+              value={factorInCripple ? vals.value : vals.crippledVal}
+            />
+          ) : (
+            <NAText />
+          );
+        },
+        header: () => <span>{accessorToFullNameMapping.fp8}</span>,
+      },
+      {
+        accessorKey: "fp6",
+        cell: (info) =>
+          info.getValue() !== null ? (
+            <TFlopsDisplay value={info.getValue() as number} />
+          ) : (
+            <NAText />
+          ),
+        header: () => <span>{accessorToFullNameMapping.fp6}</span>,
+      },
+      {
+        accessorKey: "fp4",
+        cell: (info) =>
+          info.getValue() !== null ? (
+            <TFlopsDisplay value={info.getValue() as number} />
+          ) : (
+            <NAText />
+          ),
+        header: () => <span>{accessorToFullNameMapping.fp4}</span>,
+      },
+      {
+        accessorKey: "crippled_fp32acc",
+        cell: (info) =>
+          info.getValue() ? (
+            <Badge variant="destructive">Crippled</Badge>
+          ) : (
+            <Badge variant={"success"}>Good</Badge>
+          ),
+        header: () => <span>{accessorToFullNameMapping.crippled_fp32acc}</span>,
+      },
+      {
+        accessorKey: "citation",
+        enableSorting: false,
+        cell: (info) => (
+          <Button
+            size="sm"
+            onClick={() => {
+              const newTab = window.open(info.getValue() as string, "_blank");
+              if (newTab) newTab.focus();
+            }}
+          >
+            Link
+          </Button>
+        ),
+        header: () => <span>{accessorToFullNameMapping.citation}</span>,
+      },
+    ],
+    [factorInCripple],
+  );
 
   const table = useReactTable({
     data: GPUDataJSON as GPUData[],
@@ -320,21 +426,25 @@ export const MainTable: React.FC = () => {
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    // @ts-expect-error onColumnVisibilityChange has an incorrect type def
     onColumnVisibilityChange: setColumnVisibility,
     onPaginationChange: setPagination,
     state: {
       pagination,
       columnFilters,
       columnVisibility,
+      sorting,
     },
     autoResetPageIndex: true,
     onColumnFiltersChange: setColumnFilters,
   });
 
-  const debouncedSet = debounce(setColumnFilters, 250);
-
   return (
     <div className="p-2 md:p-5 w-full h-max glassy-bg  lg:max-w-screen-lg xl:max-w-screen-xl 2xl:max-w-screen-2xl">
+      <CrippledWarningDialog
+        open={displayCrippledDialog}
+        setOpen={setDisplayCrippleDialog}
+      />
       <div className="mb-3 flex flex-col md:flex-row">
         <Input
           onChange={(e) =>
@@ -345,6 +455,16 @@ export const MainTable: React.FC = () => {
         <Separator orientation="vertical" className="hidden  md:visible h-4" />
         <div
           onClick={() => {
+            if (factorInCripple) {
+              setDisplayCrippleDialog(true);
+            }
+            // Save to localStorage
+            localStorage.setItem(
+              GPULocalStorageName,
+              JSON.stringify({
+                crippled: !factorInCripple,
+              }),
+            );
             setFactorInCripple(!factorInCripple);
           }}
           className="cursor-pointer transition-all hover:opacity-50 flex items-center justify-center mt-3 md:mt-0 md:ml-4"
@@ -360,12 +480,18 @@ export const MainTable: React.FC = () => {
         </span>
         <div>
           {Object.keys(columnVisibility).map((colName) => {
-            if (!columnVisibility[colName]) {
+            if (
+              !columnVisibility[
+                colName as keyof typeof accessorToFullNameMapping
+              ]
+            ) {
               return (
                 <Badge
                   key={colName}
                   onClick={() => {
-                    columnVisibility[colName] = true;
+                    columnVisibility[
+                      colName as keyof typeof accessorToFullNameMapping
+                    ] = true;
                     setColumnVisibility(
                       JSON.parse(stringifyVisibilityObj(columnVisibility)),
                     );
@@ -373,7 +499,11 @@ export const MainTable: React.FC = () => {
                   className="ml-1 cursor-pointer animate-in fade-in"
                 >
                   <span className="flex items-center">
-                    {accessorToFullNameMapping[colName]}{" "}
+                    {
+                      accessorToFullNameMapping[
+                        colName as keyof typeof accessorToFullNameMapping
+                      ]
+                    }{" "}
                     <FaXmark className="ml-1 text-red-600" />
                   </span>
                 </Badge>
@@ -394,13 +524,23 @@ export const MainTable: React.FC = () => {
                     key={header.id}
                     colSpan={header.colSpan}
                   >
-                    <div className="flex items-center">
+                    <div className="flex items-center justify-center">
                       <div
                         {...{
                           className: header.column.getCanSort()
-                            ? "cursor-pointer select-none flex items-center justify-center text-center p-2 transition-opacity hover:opacity-50"
+                            ? "cursor-pointer select-none flex items-center justify-center text-center transition-opacity hover:opacity-50"
                             : "",
-                          onClick: header.column.getToggleSortingHandler(),
+                          onClick: () => {
+                            setSorting([
+                              {
+                                id: header.id,
+                                desc:
+                                  header.column.getIsSorted() == "asc"
+                                    ? true
+                                    : false,
+                              },
+                            ]);
+                          },
                         }}
                       >
                         <span className="font-bold bg-gradient-to-br from-[#ffd194] to-[#70e1f5] text-transparent bg-clip-text">
@@ -418,7 +558,9 @@ export const MainTable: React.FC = () => {
                       </div>
                       <Button
                         onClick={() => {
-                          columnVisibility[header.id] = false;
+                          columnVisibility[
+                            header.id as keyof typeof accessorToFullNameMapping
+                          ] = false;
                           setColumnVisibility(
                             JSON.parse(
                               stringifyVisibilityObj(columnVisibility),
@@ -443,7 +585,10 @@ export const MainTable: React.FC = () => {
               <TableRow key={row.id}>
                 {row.getVisibleCells().map((cell) => {
                   return (
-                    <TableCell key={cell.id}>
+                    <TableCell
+                      className="text-[1.05rem] text-center items-center justify-center"
+                      key={cell.id}
+                    >
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext(),

@@ -24,3 +24,7 @@ export interface GPUData {
   fp4: number | null;
   crippled_fp32acc: boolean;
 }
+
+export interface SettingsObj {
+  crippled: boolean;
+}
