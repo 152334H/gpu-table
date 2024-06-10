@@ -201,6 +201,14 @@ add_gpu_info(
     tdp=300, **ADA,
 )
 add_gpu_info(
+    "L40S", "???", "https://resources.nvidia.com/en-us-l40s/l40s-datasheet-28413",
+    sms=142, cores_cuda=18176, cores_tensor=568,
+    fp32_general=90.5e12, fp16=362.05e12,
+    vram=48*GiB, membw=864*GiB,
+    cache_l1=128*KiB*142, cache_l2=96*MiB, register_size=AD10x_register(142),
+    tdp=350, **ADA,
+)
+add_gpu_info(
     "4090", "???", "https://images.nvidia.com/aem-dam/Solutions/Data-Center/l4/nvidia-ada-gpu-architecture-whitepaper-v2.1.pdf#page=13",
     sms=128, cores_cuda=16384, cores_tensor=512,
     fp32_general=82.6e12, fp16=330.3e12, crippled_fp32acc=True,
