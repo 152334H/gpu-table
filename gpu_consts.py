@@ -148,6 +148,33 @@ add_gpu_info(
     tdp=450, **AMPERE,
 )
 add_gpu_info(
+    "A4000", "???", "https://www.nvidia.com/content/dam/en-zz/Solutions/gtcs21/rtx-a4000/nvidia-rtx-a4000-datasheet.pdf",
+    sms=48, cores_cuda=6144, cores_tensor=192,
+    fp32_general=19.2e12, fp16=153.4e12,
+    vram=16*GiB, membw=448*GiB,
+    cache_l1=128*64*KiB, cache_l2=4*MiB,register_size=None,
+    tdp=140,
+    **AMPERE,
+)
+add_gpu_info(
+    "A4500", "???", "https://www.nvidia.com/content/dam/en-zz/Solutions/design-visualization/rtx/nvidia-rtx-a4500-datasheet.pdf",
+    sms=56, cores_cuda=7168, cores_tensor=224,
+    fp32_general=23.7e12, fp16=189.2e12,
+    vram=20*GiB, membw=640*GiB,
+    cache_l1=128*64*KiB, cache_l2=6*MiB,register_size=None,
+    tdp=200,
+    **AMPERE,
+)
+add_gpu_info(
+    "A5000", "???", "https://pnypartners.com/wp-content/uploads/nvidia-rtx-a5000-datasheet.pdf",
+    sms=64, cores_cuda=8192, cores_tensor=256,
+    fp32_general=27.8e12, fp16=222.2e12,
+    vram=24*GiB, membw=768*GiB,
+    cache_l1=128*64*KiB, cache_l2=6*MiB,register_size=None,
+    tdp=230,
+    **AMPERE,
+)
+add_gpu_info(
     "A6000", "???", "https://images.nvidia.com/aem-dam/en-zz/Solutions/geforce/ampere/pdf/NVIDIA-ampere-GA102-GPU-Architecture-Whitepaper-V1.pdf#page=15",
     sms=84, cores_cuda=10752, cores_tensor=336,
     fp32_general=38.7e12, fp16=154.8e12,
@@ -209,6 +236,22 @@ add_gpu_info(
     tdp=350, **ADA,
 )
 add_gpu_info(
+    "4000A", "???", "https://www.nvidia.com/content/dam/en-zz/Solutions/rtx-4000-sff/proviz-rtx-4000-sff-ada-datasheet-2616456-web.pdf",
+    sms=48, cores_cuda=6144, cores_tensor=192,
+    fp32_general=19.2e12, fp16=76.7e12,
+    vram=20*GiB, membw=280*GiB,
+    cache_l1=128*KiB*48, cache_l2=48*MiB, register_size=AD10x_register(48),
+    tdp=130, **ADA,
+)
+add_gpu_info(
+    "6000A", "???", "https://images.nvidia.com/aem-dam/en-zz/Solutions/technologies/NVIDIA-ADA-GPU-PROVIZ-Architecture-Whitepaper_1.1.pdf#page=28",
+    sms=142, cores_cuda=18176, cores_tensor=568,
+    fp32_general=91.1e12, fp16=364.2e12,
+    vram=48*GiB, membw=960*GiB,
+    cache_l1=128*KiB*142, cache_l2=96*MiB, register_size=AD10x_register(142),
+    tdp=300, **ADA,
+)
+add_gpu_info(
     "4090", "???", "https://images.nvidia.com/aem-dam/Solutions/Data-Center/l4/nvidia-ada-gpu-architecture-whitepaper-v2.1.pdf#page=13",
     sms=128, cores_cuda=16384, cores_tensor=512,
     fp32_general=82.6e12, fp16=330.3e12, crippled_fp32acc=True,
@@ -223,6 +266,14 @@ add_gpu_info(
     vram=16*GiB, membw=734003*MiB,
     cache_l1=128*KiB*76, cache_l2=64*MiB, register_size=AD10x_register(76),
     tdp=320, **ADA,
+)
+add_gpu_info(
+    "4070ti", "???", "https://www.techpowerup.com/gpu-specs/geforce-rtx-4070-ti.c3950",
+    sms=60, cores_cuda=7680, cores_tensor=240,
+    fp32_general=40.1e12, fp16=154.8e12, crippled_fp32acc=True,
+    vram=12*GiB, membw=516301*MiB,
+    cache_l1=128*KiB*60, cache_l2=48*MiB, register_size=AD10x_register(60),
+    tdp=285, **ADA,
 )
 add_gpu_info(
     "H100-PCIe", "???", "https://resources.nvidia.com/en-us-tensor-core",
@@ -241,6 +292,7 @@ add_gpu_info(
     tdp=700, **ADA,
 )
 
+# consider H100 NVL
 
 
 import json
