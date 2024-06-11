@@ -3,11 +3,9 @@ import { useState, useMemo, useEffect } from "react";
 import {
   ColumnDef,
   ColumnFiltersState,
-  PaginationState,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
-  getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
@@ -21,17 +19,9 @@ import {
 } from "@/components/ui/table";
 import GPUDataJSON from "@/assets/gpu_data.json";
 import { Button } from "@/components/ui/button";
-import { FaAngleLeft, FaAngleRight } from "react-icons/fa6";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   Tooltip,
   TooltipContent,
@@ -120,10 +110,6 @@ const TFlopsDisplay: React.FC<DisplayProps> = ({ value, className }) => {
 export const MainTable: React.FC = () => {
   const [factorInCripple, setFactorInCripple] = useState(true);
   const [displayCrippledDialog, setDisplayCrippleDialog] = useState(false);
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: 10,
-  });
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]); // can set initial column filter state here
   const [columnVisibility, setColumnVisibility] = useState({
     name: true,
@@ -425,12 +411,9 @@ export const MainTable: React.FC = () => {
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     // @ts-expect-error onColumnVisibilityChange has an incorrect type def
     onColumnVisibilityChange: setColumnVisibility,
-    onPaginationChange: setPagination,
     state: {
-      pagination,
       columnFilters,
       columnVisibility,
       sorting,
@@ -531,15 +514,21 @@ export const MainTable: React.FC = () => {
                             ? "cursor-pointer select-none flex items-center justify-center text-center transition-opacity hover:opacity-50"
                             : "",
                           onClick: () => {
-                            setSorting([
-                              {
+                            const setSort = [];
+                            const sortState = header.column.getIsSorted();
+                            if (sortState) {
+                              if (sortState == "asc")
+                                setSort.push({
+                                  id: header.id,
+                                  desc: true,
+                                });
+                            } else if (!sortState) {
+                              setSort.push({
                                 id: header.id,
-                                desc:
-                                  header.column.getIsSorted() == "asc"
-                                    ? true
-                                    : false,
-                              },
-                            ]);
+                                desc: false,
+                              });
+                            }
+                            setSorting(setSort);
                           },
                         }}
                       >
@@ -601,75 +590,6 @@ export const MainTable: React.FC = () => {
           })}
         </TableBody>
       </Table>
-
-      <div className="flex flex-col md:flex-row items-center gap-2 mt-2">
-        <div className="flex mb-3 md:mb-0">
-          <Button
-            className="mr-1"
-            variant="outline"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            <FaAngleLeft />
-          </Button>
-          <Button
-            variant="outline"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            <FaAngleRight />
-          </Button>
-
-          <span className="flex items-center gap-1 ml-3">
-            Page:
-            <Input
-              type="number"
-              value={table.getState().pagination.pageIndex + 1}
-              onChange={(e) => {
-                const page = e.target.value ? Number(e.target.value) - 1 : 0;
-                table.setPageIndex(page);
-              }}
-              className="border p-1 rounded w-16 mr-1"
-            />
-            of{" "}
-            <span className="text-primary font-bold">
-              {table.getPageCount().toLocaleString()}
-            </span>
-          </span>
-        </div>
-        <Separator
-          orientation="vertical"
-          className="hidden md:block bg-slate-300 h-9 mx-1"
-        />
-        <Select
-          value={table.getState().pagination.pageSize.toString()}
-          onValueChange={(value) => {
-            table.setPageSize(Number(value));
-          }}
-        >
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Theme" />
-          </SelectTrigger>
-          <SelectContent>
-            {[10, 20].map((pageSize) => (
-              <SelectItem key={pageSize} value={pageSize.toString()}>
-                Show {pageSize}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <div>
-          Showing{" "}
-          <span className="text-primary font-bold">
-            {table.getRowModel().rows.length.toLocaleString()}
-          </span>{" "}
-          of{" "}
-          <span className="text-primary font-bold">
-            {table.getRowCount().toLocaleString()}
-          </span>{" "}
-          GPUs
-        </div>
-      </div>
     </div>
   );
 };
