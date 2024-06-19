@@ -184,6 +184,15 @@ add_gpu_info(
     **AMPERE,
 )
 add_gpu_info(
+    "A10", "???", "https://www.nvidia.com/content/dam/en-zz/Solutions/Data-Center/a10/pdf/datasheet-new/nvidia-a10-datasheet.pdf",
+    sms=72, cores_cuda=9216, cores_tensor=288,
+    fp32_general=31.2e12, fp16=125e12,
+    vram=24*GiB, membw=600*GiB,
+    cache_l1=128*72*KiB, cache_l2=6*MiB, register_size=21504*KiB,
+    tdp=150,
+    **AMPERE,
+)
+add_gpu_info(
     "A40", "???", "https://images.nvidia.com/aem-dam/en-zz/Solutions/geforce/ampere/pdf/NVIDIA-ampere-GA102-GPU-Architecture-Whitepaper-V1.pdf#page=15",
     sms=84, cores_cuda=10752, cores_tensor=336,
     fp32_general=37.4e12, fp16=149.7e12,
