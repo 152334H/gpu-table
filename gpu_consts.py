@@ -150,7 +150,7 @@ add_gpu_info(
 add_gpu_info(
     "A4000", "???", "https://www.nvidia.com/content/dam/en-zz/Solutions/gtcs21/rtx-a4000/nvidia-rtx-a4000-datasheet.pdf",
     sms=48, cores_cuda=6144, cores_tensor=192,
-    fp32_general=19.2e12, fp16=153.4e12,
+    fp32_general=19.2e12, fp16=76.7e12,
     vram=16*GiB, membw=448*GiB,
     cache_l1=128*64*KiB, cache_l2=4*MiB,register_size=None,
     tdp=140,
@@ -159,7 +159,7 @@ add_gpu_info(
 add_gpu_info(
     "A4500", "???", "https://www.nvidia.com/content/dam/en-zz/Solutions/design-visualization/rtx/nvidia-rtx-a4500-datasheet.pdf",
     sms=56, cores_cuda=7168, cores_tensor=224,
-    fp32_general=23.7e12, fp16=189.2e12,
+    fp32_general=23.7e12, fp16=94.6e12,
     vram=20*GiB, membw=640*GiB,
     cache_l1=128*64*KiB, cache_l2=6*MiB,register_size=None,
     tdp=200,
@@ -168,7 +168,7 @@ add_gpu_info(
 add_gpu_info(
     "A5000", "???", "https://pnypartners.com/wp-content/uploads/nvidia-rtx-a5000-datasheet.pdf",
     sms=64, cores_cuda=8192, cores_tensor=256,
-    fp32_general=27.8e12, fp16=222.2e12,
+    fp32_general=27.8e12, fp16=111.1e12,
     vram=24*GiB, membw=768*GiB,
     cache_l1=128*64*KiB, cache_l2=6*MiB,register_size=None,
     tdp=230,
