@@ -108,7 +108,7 @@ add_gpu_info(
 add_gpu_info(
     "3070", "???", "https://images.nvidia.com/aem-dam/en-zz/Solutions/geforce/ampere/pdf/NVIDIA-ampere-GA102-GPU-Architecture-Whitepaper-V1.pdf#page=44",
     sms=46, cores_cuda=5888, cores_tensor=184, # "3rd gen not 2nd gen"
-    fp32_general=20.3e12, fp16=162.6e12, crippled_fp32acc=True,
+    fp32_general=20.3e12, fp16=81.3e12, crippled_fp32acc=True,
     vram=8*GiB, membw=448*GiB,
     cache_l1=5888*KiB, cache_l2=4096*KiB,register_size=11776*KiB,
     tdp=220,
