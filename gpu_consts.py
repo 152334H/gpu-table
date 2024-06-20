@@ -117,7 +117,7 @@ add_gpu_info(
 add_gpu_info(
     "3080", "???", "https://images.nvidia.com/aem-dam/en-zz/Solutions/geforce/ampere/pdf/NVIDIA-ampere-GA102-GPU-Architecture-Whitepaper-V1.pdf#page=15",
     sms=68, cores_cuda=8704, cores_tensor=272, 
-    fp32_general=29.8e12, fp16=238e12, crippled_fp32acc=True,
+    fp32_general=29.8e12, fp16=119e12, crippled_fp32acc=True,
     vram=10*GiB, membw=760*GiB,
     cache_l1=8704*KiB, cache_l2=5120*KiB,register_size=17408*KiB,
     tdp=320,
@@ -180,6 +180,15 @@ add_gpu_info(
     fp32_general=38.7e12, fp16=154.8e12,
     vram=48*GiB, membw=768*GiB,
     cache_l1=10752*KiB, cache_l2=6144*KiB,register_size=21504*KiB,
+    tdp=300,
+    **AMPERE,
+)
+add_gpu_info(
+    "A10g", "???", "https://d1.awsstatic.com/product-marketing/ec2/NVIDIA_AWS_A10G_DataSheet_FINAL_02_17_2022.pdf",
+    sms=80, cores_cuda=10240, cores_tensor=320,
+    fp32_general=35e12, fp16=70e12,
+    vram=24*GiB, membw=600*GiB,
+    cache_l1=128*72*KiB, cache_l2=6*MiB, register_size=21504*KiB,
     tdp=300,
     **AMPERE,
 )
