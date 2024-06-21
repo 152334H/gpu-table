@@ -22,3 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Ignored files
+some-gpus.json
+src/assets/gpu_data.json
