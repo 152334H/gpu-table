@@ -87,8 +87,8 @@ add_gpu_info(
     **TURING,
 )
 add_gpu_info(
-    "Titan", "???", "https://images.nvidia.com/aem-dam/en-zz/Solutions/geforce/ampere/pdf/NVIDIA-ampere-GA102-GPU-Architecture-Whitepaper-V1.pdf#page=44",
-    sms=72, cores_cuda=4608, cores_tensor=None,
+    "Titan RTX", "???", "https://images.nvidia.com/aem-dam/en-zz/Solutions/geforce/ampere/pdf/NVIDIA-ampere-GA102-GPU-Architecture-Whitepaper-V1.pdf#page=44",
+    sms=72, cores_cuda=4608, cores_tensor=576,
     fp32_general=16.3e12, fp16=130.5e12, 
     vram=24*GiB, membw=672*GiB,
     cache_l1=6912*KiB, cache_l2=6144*KiB, register_size=18432*KiB,
@@ -307,7 +307,7 @@ add_gpu_info(
     sms=114, cores_cuda=14592, cores_tensor=456,
     fp32_general=66.9e12, fp16=756.5e12,
     vram=80*GiB, membw=2048*GiB,
-    cache_l1=None, cache_l2=50*MiB, register_size=33792,
+    cache_l1=None, cache_l2=50*MiB, register_size=33792*KiB,
     tdp=350, **ADA,
 )
 add_gpu_info(
@@ -315,7 +315,7 @@ add_gpu_info(
     sms=132, cores_cuda=16896, cores_tensor=528,
     fp32_general=66.9e12, fp16=989.4e12,
     vram=80*GiB, membw=3352*GiB,
-    cache_l1=None, cache_l2=50*MiB, register_size=33792,
+    cache_l1=None, cache_l2=50*MiB, register_size=33792*KiB,
     tdp=700, **ADA,
 )
 
