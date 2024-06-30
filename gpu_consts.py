@@ -115,6 +115,15 @@ add_gpu_info(
     **AMPERE,
 )
 add_gpu_info(
+    "3070ti", "???", "https://www.techpowerup.com/gpu-specs/geforce-rtx-3070-ti.c3675",
+    sms=48, cores_cuda=6144, cores_tensor=192, # "3rd gen not 2nd gen"
+    fp32_general=21.0e12, fp16=84e12, crippled_fp32acc=True,
+    vram=8*GiB, membw=608.3*GiB,
+    cache_l1=48*128*KiB, cache_l2=4096*KiB,register_size=48*256*KiB,
+    tdp=290,
+    **AMPERE,
+)
+add_gpu_info(
     "3080", "???", "https://images.nvidia.com/aem-dam/en-zz/Solutions/geforce/ampere/pdf/NVIDIA-ampere-GA102-GPU-Architecture-Whitepaper-V1.pdf#page=15",
     sms=68, cores_cuda=8704, cores_tensor=272, 
     fp32_general=29.8e12, fp16=119e12, crippled_fp32acc=True,
