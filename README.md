@@ -9,6 +9,9 @@ npm run dev
 
 ## For deploying:
 
+[CI](https://github.com/152334H/gpu-table/blob/main/.github/workflows/publish.yaml) autodeploys to [github page](https://152334h.github.io/gpu-table/)
+
+you can build locally though:
 ```
 npm run build
 ```
