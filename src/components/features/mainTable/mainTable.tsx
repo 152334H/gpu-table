@@ -50,14 +50,25 @@ interface CrippledNonCrippledProps {
   value: number;
   crippledVal: number;
 }
-
 const KBDisplay: React.FC<DisplayProps> = ({ value, className }) => {
+  const [tooltipOpen, setTooltipOpen] = useState(false);
   return (
-    <Tooltip>
+    <Tooltip
+      open={tooltipOpen}
+      onOpenChange={(state) => {
+        if (value) setTooltipOpen(state);
+      }}
+    >
       <TooltipTrigger asChild>
         <span className={`whitespace-nowrap ${className}`}>
-          {Math.round(value / 1000)}{" "}
-          <span className="text-primary text-sm">KB</span>
+          {value ? (
+            <>
+              {Math.round(value / 1000)}{" "}
+              <span className="text-primary text-sm">KB</span>
+            </>
+          ) : (
+            <span className="text-slate-500 text-sm">None</span>
+          )}
         </span>
       </TooltipTrigger>
       <TooltipContent>
@@ -70,13 +81,25 @@ const KBDisplay: React.FC<DisplayProps> = ({ value, className }) => {
 };
 
 const GBDisplay: React.FC<DisplayProps> = ({ value, className }) => {
+  const [tooltipOpen, setTooltipOpen] = useState(false);
   return (
-    <Tooltip>
+    <Tooltip
+      open={tooltipOpen}
+      onOpenChange={(state) => {
+        if (value) setTooltipOpen(state);
+      }}
+    >
       <TooltipTrigger asChild>
-        <span className={`whitespace-nowrap ${className}`}>
-          {(value / 1000000000).toFixed(1)}{" "}
-          <span className="text-primary text-sm">GB</span>
-        </span>
+        {value ? (
+          <>
+            <span className={`whitespace-nowrap ${className}`}>
+              {(value / 1000000000).toFixed(1)}{" "}
+              <span className="text-primary text-sm">GB</span>
+            </span>
+          </>
+        ) : (
+          <span className="text-slate-500 text-sm">None</span>
+        )}
       </TooltipTrigger>
       <TooltipContent>
         <span className={`whitespace-nowrap ${className}`}>
@@ -89,13 +112,25 @@ const GBDisplay: React.FC<DisplayProps> = ({ value, className }) => {
 };
 
 const TFlopsDisplay: React.FC<DisplayProps> = ({ value, className }) => {
+  const [tooltipOpen, setTooltipOpen] = useState(false);
   return (
-    <Tooltip>
+    <Tooltip
+      open={tooltipOpen}
+      onOpenChange={(state) => {
+        if (value) setTooltipOpen(state);
+      }}
+    >
       <TooltipTrigger asChild>
-        <span className={`whitespace-nowrap ${className}`}>
-          {(value / 1000000000000).toFixed(2)}{" "}
-          <span className="text-primary text-sm">TFLOPS</span>
-        </span>
+        {value ? (
+          <>
+            <span className={`whitespace-nowrap ${className}`}>
+              {(value / 1000000000000).toFixed(2)}{" "}
+              <span className="text-primary text-sm">TFLOPS</span>
+            </span>
+          </>
+        ) : (
+          <span className="text-slate-500 text-sm">None</span>
+        )}
       </TooltipTrigger>
       <TooltipContent>
         <span className={`whitespace-nowrap ${className}`}>
@@ -450,7 +485,7 @@ export const MainTable: React.FC = () => {
             );
             setFactorInCripple(!factorInCripple);
           }}
-          className="cursor-pointer transition-all hover:opacity-50 flex items-center justify-center mt-3 md:mt-0 md:ml-4"
+          className="cursor-pointer transition-all sm:hover:opacity-50 flex items-center justify-center mt-3 md:mt-0 md:ml-4"
         >
           <Checkbox checked={factorInCripple} className="mr-2" />{" "}
           <span>Factor in Crippled FP32 Performance</span>
