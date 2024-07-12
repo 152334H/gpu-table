@@ -39,7 +39,7 @@ import { FaXmark } from "react-icons/fa6";
 import { CrippledWarningDialog } from "./crippledWarning";
 
 const NAText: React.FC = () => {
-  return <span className="text-slate-500">N/A</span>;
+  return <span className="text-slate-500 text-sm">N/A</span>;
 };
 
 interface DisplayProps {
@@ -60,16 +60,14 @@ const KBDisplay: React.FC<DisplayProps> = ({ value, className }) => {
       }}
     >
       <TooltipTrigger asChild>
-        <span className={`whitespace-nowrap ${className}`}>
-          {value ? (
-            <>
-              {Math.round(value / 1000)}{" "}
-              <span className="text-primary text-sm">KB</span>
-            </>
-          ) : (
-            <span className="text-slate-500 text-sm">None</span>
-          )}
-        </span>
+        {value ? (
+          <span className={`whitespace-nowrap ${className}`}>
+            {Math.round(value / 1000)}{" "}
+            <span className="text-primary text-sm">KB</span>
+          </span>
+        ) : (
+          <NAText />
+        )}
       </TooltipTrigger>
       <TooltipContent>
         <span className={`whitespace-nowrap ${className}`}>
@@ -91,14 +89,12 @@ const GBDisplay: React.FC<DisplayProps> = ({ value, className }) => {
     >
       <TooltipTrigger asChild>
         {value ? (
-          <>
-            <span className={`whitespace-nowrap ${className}`}>
-              {(value / 1000000000).toFixed(1)}{" "}
-              <span className="text-primary text-sm">GB</span>
-            </span>
-          </>
+          <span className={`whitespace-nowrap ${className}`}>
+            {(value / 1000000000).toFixed(1)}{" "}
+            <span className="text-primary text-sm">GB</span>
+          </span>
         ) : (
-          <span className="text-slate-500 text-sm">None</span>
+          <NAText />
         )}
       </TooltipTrigger>
       <TooltipContent>
@@ -117,19 +113,18 @@ const TFlopsDisplay: React.FC<DisplayProps> = ({ value, className }) => {
     <Tooltip
       open={tooltipOpen}
       onOpenChange={(state) => {
+        console.log(state);
         if (value) setTooltipOpen(state);
       }}
     >
       <TooltipTrigger asChild>
         {value ? (
-          <>
-            <span className={`whitespace-nowrap ${className}`}>
-              {(value / 1000000000000).toFixed(2)}{" "}
-              <span className="text-primary text-sm">TFLOPS</span>
-            </span>
-          </>
+          <span className={`whitespace-nowrap ${className}`}>
+            {(value / 1000000000000).toFixed(2)}{" "}
+            <span className="text-primary text-sm">TFLOPS</span>
+          </span>
         ) : (
-          <span className="text-slate-500 text-sm">None</span>
+          <NAText />
         )}
       </TooltipTrigger>
       <TooltipContent>
@@ -246,22 +241,12 @@ export const MainTable: React.FC = () => {
       },
       {
         accessorKey: "cache_l1",
-        cell: (info) =>
-          info.getValue() !== null ? (
-            <KBDisplay value={info.getValue() as number} />
-          ) : (
-            <NAText />
-          ),
+        cell: (info) => <KBDisplay value={info.getValue() as number} />,
         header: () => <span>{accessorToFullNameMapping.cache_l1}</span>,
       },
       {
         accessorKey: "cache_l2",
-        cell: (info) =>
-          info.getValue() !== null ? (
-            <KBDisplay value={info.getValue() as number} />
-          ) : (
-            <NAText />
-          ),
+        cell: (info) => <KBDisplay value={info.getValue() as number} />,
         header: () => <span>{accessorToFullNameMapping.cache_l2}</span>,
       },
       {
@@ -318,44 +303,25 @@ export const MainTable: React.FC = () => {
         },
         cell: (info) => {
           const vals = info.getValue() as CrippledNonCrippledProps;
-          return info.getValue() !== null ? (
-            <TFlopsDisplay
-              value={factorInCripple ? vals.value : vals.crippledVal}
-            />
-          ) : (
-            <NAText />
-          );
+          <TFlopsDisplay
+            value={factorInCripple ? vals.value : vals.crippledVal}
+          />;
         },
         header: () => <span>{accessorToFullNameMapping.bf16}</span>,
       },
       {
         accessorKey: "tf32",
-        cell: (info) =>
-          info.getValue() !== null ? (
-            <TFlopsDisplay value={info.getValue() as number} />
-          ) : (
-            <NAText />
-          ),
+        cell: (info) => <TFlopsDisplay value={info.getValue() as number} />,
         header: () => <span>{accessorToFullNameMapping.tf32}</span>,
       },
       {
         accessorKey: "int8",
-        cell: (info) =>
-          info.getValue() !== null ? (
-            <TFlopsDisplay value={info.getValue() as number} />
-          ) : (
-            <NAText />
-          ),
+        cell: (info) => <TFlopsDisplay value={info.getValue() as number} />,
         header: () => <span>{accessorToFullNameMapping.int8}</span>,
       },
       {
         accessorKey: "int4",
-        cell: (info) =>
-          info.getValue() !== null ? (
-            <TFlopsDisplay value={info.getValue() as number} />
-          ) : (
-            <NAText />
-          ),
+        cell: (info) => <TFlopsDisplay value={info.getValue() as number} />,
         header: () => <span>{accessorToFullNameMapping.int4}</span>,
       },
       {
@@ -380,34 +346,22 @@ export const MainTable: React.FC = () => {
         },
         cell: (info) => {
           const vals = info.getValue() as CrippledNonCrippledProps;
-          info.getValue() !== null ? (
+          return (
             <TFlopsDisplay
               value={factorInCripple ? vals.value : vals.crippledVal}
             />
-          ) : (
-            <NAText />
           );
         },
         header: () => <span>{accessorToFullNameMapping.fp8}</span>,
       },
       {
         accessorKey: "fp6",
-        cell: (info) =>
-          info.getValue() !== null ? (
-            <TFlopsDisplay value={info.getValue() as number} />
-          ) : (
-            <NAText />
-          ),
+        cell: (info) => <TFlopsDisplay value={info.getValue() as number} />,
         header: () => <span>{accessorToFullNameMapping.fp6}</span>,
       },
       {
         accessorKey: "fp4",
-        cell: (info) =>
-          info.getValue() !== null ? (
-            <TFlopsDisplay value={info.getValue() as number} />
-          ) : (
-            <NAText />
-          ),
+        cell: (info) => <TFlopsDisplay value={info.getValue() as number} />,
         header: () => <span>{accessorToFullNameMapping.fp4}</span>,
       },
       {
