@@ -113,7 +113,6 @@ const TFlopsDisplay: React.FC<DisplayProps> = ({ value, className }) => {
     <Tooltip
       open={tooltipOpen}
       onOpenChange={(state) => {
-        console.log(state);
         if (value) setTooltipOpen(state);
       }}
     >
