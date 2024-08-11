@@ -52,6 +52,7 @@ interface CrippledNonCrippledProps {
 }
 const KBDisplay: React.FC<DisplayProps> = ({ value, className }) => {
   const [tooltipOpen, setTooltipOpen] = useState(false);
+  const calculateAmount = Math.round(value / 1024);
   return (
     <Tooltip
       open={tooltipOpen}
@@ -62,8 +63,7 @@ const KBDisplay: React.FC<DisplayProps> = ({ value, className }) => {
       <TooltipTrigger asChild>
         {value ? (
           <span className={`whitespace-nowrap ${className}`}>
-            {Math.round(value / 1000)}{" "}
-            <span className="text-primary text-sm">KB</span>
+            {calculateAmount} <span className="text-primary text-sm">KiB</span>
           </span>
         ) : (
           <NAText />
@@ -71,7 +71,7 @@ const KBDisplay: React.FC<DisplayProps> = ({ value, className }) => {
       </TooltipTrigger>
       <TooltipContent>
         <span className={`whitespace-nowrap ${className}`}>
-          {(value / 1000).toFixed(3)} <span className="text-primary">KB</span>
+          {calculateAmount.toFixed(3)} <span className="text-primary">KiB</span>
         </span>
       </TooltipContent>
     </Tooltip>
@@ -80,6 +80,7 @@ const KBDisplay: React.FC<DisplayProps> = ({ value, className }) => {
 
 const GBDisplay: React.FC<DisplayProps> = ({ value, className }) => {
   const [tooltipOpen, setTooltipOpen] = useState(false);
+  const calculateAmount = Math.round(value / 1024 ** 3);
   return (
     <Tooltip
       open={tooltipOpen}
@@ -90,8 +91,8 @@ const GBDisplay: React.FC<DisplayProps> = ({ value, className }) => {
       <TooltipTrigger asChild>
         {value ? (
           <span className={`whitespace-nowrap ${className}`}>
-            {(value / 1000000000).toFixed(1)}{" "}
-            <span className="text-primary text-sm">GB</span>
+            {calculateAmount.toFixed(1)}{" "}
+            <span className="text-primary text-sm">GiB</span>
           </span>
         ) : (
           <NAText />
@@ -99,8 +100,7 @@ const GBDisplay: React.FC<DisplayProps> = ({ value, className }) => {
       </TooltipTrigger>
       <TooltipContent>
         <span className={`whitespace-nowrap ${className}`}>
-          {(value / 1000000000).toFixed(3)}{" "}
-          <span className="text-primary">GB</span>
+          {calculateAmount.toFixed(3)} <span className="text-primary">GiB</span>
         </span>
       </TooltipContent>
     </Tooltip>
