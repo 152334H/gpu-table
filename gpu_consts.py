@@ -279,7 +279,7 @@ add_gpu_info(
     tdp=300, **ADA,
 )
 add_gpu_info(
-    "4090", "???", "https://images.nvidia.com/aem-dam/Solutions/Data-Center/l4/nvidia-ada-gpu-architecture-whitepaper-v2.1.pdf#page=13",
+    "4090", "???", "https://images.nvidia.com/aem-dam/Solutions/Data-Center/l4/nvidia-ada-gpu-architecture-whitepaper-V2.02.pdf#page=30",
     sms=128, cores_cuda=16384, cores_tensor=512,
     fp32_general=82.6e12, fp16=330.3e12, crippled_fp32acc=True,
     vram=24*GiB, membw=1008*GiB,
