@@ -220,7 +220,7 @@ add_gpu_info(
     **AMPERE,
 )
 add_gpu_info(
-    "A100-SXM", "???", "https://resources.nvidia.com/en-us-genomics-ep/ampere-architecture-white-paper?xs=169656#page=1",
+    "A100-SXM", "???", "https://images.nvidia.com/aem-dam/en-zz/Solutions/data-center/nvidia-ampere-architecture-whitepaper.pdf",
     sms=108, cores_cuda=6912, cores_tensor=432,
     fp32_general=19.5e12, fp16=312e12,
     vram=80*GiB, membw=1555*GiB,
