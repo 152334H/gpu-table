@@ -311,7 +311,7 @@ add_gpu_info(
     tdp=350, **ADA,
 )
 add_gpu_info(
-    "H100-SXM", "???", "https://resources.nvidia.com/en-us-tensor-core/nvidia-tensor-core-gpu-datasheet",
+    "H100-SXM", "???", "https://developer.nvidia.com/blog/nvidia-hopper-architecture-in-depth/",
     sms=132, cores_cuda=16896, cores_tensor=528,
     fp32_general=66.9e12, fp16=989.4e12,
     vram=80*GiB, membw=3352*GiB,
