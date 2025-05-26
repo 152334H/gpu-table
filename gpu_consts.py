@@ -303,7 +303,7 @@ add_gpu_info(
     tdp=285, **ADA,
 )
 add_gpu_info(
-    "H100-PCIe", "???", "https://resources.nvidia.com/en-us-tensor-core",
+    "H100-PCIe", "???", "https://www.advancedclustering.com/wp-content/uploads/2022/03/gtc22-whitepaper-hopper.pdf",
     sms=114, cores_cuda=14592, cores_tensor=456,
     fp32_general=66.9e12, fp16=756.5e12,
     vram=80*GiB, membw=2048*GiB,
